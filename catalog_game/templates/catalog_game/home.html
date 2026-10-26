@@ -1,0 +1,15 @@
+{% extends 'catalog_game/base.html' %}
+{% block content %}
+<section class="hero">
+  <h1>Знаходьте ігри,<br>до яких хочеться повертатися</h1>
+  <p>У каталозі вже {{ total }} ігор. Читайте відгуки, збирайте обране та добирайте гру під свій настрій і бюджет.</p>
+  <div class="hrow"><a class="btn" href="{% url 'catalog_game:catalog' %}">Відкрити каталог</a><a class="btn ghost" href="{% url 'catalog_game:pick' %}">Підібрати гру</a></div>
+</section>
+{% include 'catalog_game/_age_notice.html' %}
+<section>
+  <h2>Жанри</h2>
+  <div class="chips">{% for gn in genres %}<a href="{% url 'catalog_game:catalog' %}?genre={{ gn.pk }}">{{ gn.name_genre }}</a>{% endfor %}</div>
+</section>
+{% if top %}<section><h2>Найкращі за відгуками</h2><div class="grid">{% for g in top %}{% include 'catalog_game/_card.html' %}{% endfor %}</div></section>{% endif %}
+<section><h2>Новинки</h2><div class="grid">{% for g in newest %}{% include 'catalog_game/_card.html' %}{% empty %}<p class="muted">Поки що в каталозі немає ігор.</p>{% endfor %}</div></section>
+{% endblock %}

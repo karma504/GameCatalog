@@ -1,0 +1,31 @@
+{% extends 'catalog_game/base.html' %}
+{% block title %}Каталог · Хмарна полиця{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center"><h1>Каталог <small class="muted">{{ total }}</small></h1></div>
+{% include 'catalog_game/_age_notice.html' %}
+<div class="split">
+<form class="panel filters" method="get">
+  <label>Пошук<input name="q" value="{{ f.q }}"></label>
+  <label>Жанр<select name="genre"><option value="">Будь-який</option>{% for x in genres %}<option value="{{ x.pk }}" {% if f.genre == x.pk|stringformat:"s" %}selected{% endif %}>{{ x.name_genre }}</option>{% endfor %}</select></label>
+  <label>Платформа<select name="platform"><option value="">Будь-яка</option>{% for x in platforms %}<option value="{{ x.pk }}" {% if f.platform == x.pk|stringformat:"s" %}selected{% endif %}>{{ x.name_platform }}</option>{% endfor %}</select></label>
+  <label>Розробник<select name="dev"><option value="">Будь-який</option>{% for x in devs %}<option value="{{ x.pk }}" {% if f.dev == x.pk|stringformat:"s" %}selected{% endif %}>{{ x.name_dev }}</option>{% endfor %}</select></label>
+  <label>Віковий рейтинг<select name="age"><option value="">Будь-який</option>{% for a in ages %}<option {% if f.age == a %}selected{% endif %}>{{ a }}</option>{% endfor %}</select></label>
+  <div class="two"><label{% if errors.price_min %} class="has-error"{% endif %}>Ціна від<input name="price_min" value="{{ f.price_min }}" inputmode="decimal" autocomplete="off">{% if errors.price_min %}<span class="field-error" role="alert">{{ errors.price_min }}</span>{% endif %}</label><label{% if errors.price_max %} class="has-error"{% endif %}>до<input name="price_max" value="{{ f.price_max }}" inputmode="decimal" autocomplete="off">{% if errors.price_max %}<span class="field-error" role="alert">{{ errors.price_max }}</span>{% endif %}</label></div>
+  <label class="check"><input type="checkbox" name="free" value="1" {% if f.free %}checked{% endif %}> Лише безкоштовні</label>
+  <label>Сортування<select name="sort">
+    <option value="new" {% if sort == 'new' %}selected{% endif %}>Спочатку нові</option>
+    <option value="old" {% if sort == 'old' %}selected{% endif %}>Спочатку старі</option>
+    <option value="rating" {% if sort == 'rating' %}selected{% endif %}>За оцінкою</option>
+    <option value="cheap" {% if sort == 'cheap' %}selected{% endif %}>Дешевші</option>
+    <option value="pricey" {% if sort == 'pricey' %}selected{% endif %}>Дорожчі</option>
+    <option value="title" {% if sort == 'title' %}selected{% endif %}>За назвою</option>
+  </select></label>
+  <button class="btn">Застосувати</button> <a class="muted" href="{% url 'catalog_game:catalog' %}">Скинути</a>
+</form>
+<div>
+  {% if errors %}<div class="msg error" role="alert">Каталог поки не фільтруємо: виправте поля, позначені червоним.</div>{% endif %}
+  <div class="grid">{% for g in page_obj %}{% include 'catalog_game/_card.html' %}{% empty %}{% if not errors %}<p class="panel">Нічого не знайдено. Спробуйте пом’якшити фільтри.</p>{% endif %}{% endfor %}</div>
+  {% include 'catalog_game/_pagination.html' %}
+</div>
+</div>
+{% endblock %}

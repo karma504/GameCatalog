@@ -1,0 +1,23 @@
+{% load catalog_tags %}<article class="tile" style="--h:{{ g.hue }}">
+  <a class="tile-link" href="{% url 'catalog_game:game_detail' g.pk %}" aria-label="{{ g.title }}: докладніше"></a>
+  <div class="cover{% if g.image_link %} has-img{% endif %}">
+    {% if g.image_link %}<img src="{{ g.image_link }}" alt="Обкладинка гри «{{ g.title }}»" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()">{% endif %}
+    <span class="cover-letter">{{ g.title|slice:":1" }}</span>
+    <em class="chip">{{ g.price_label }}</em>
+    {% if g.age_rating %}<em class="chip age">{{ g.age_rating }}</em>{% endif %}
+  </div>
+  <div class="tile-body">
+    <h3>{{ g.title }}</h3>
+    <p class="muted">{{ g.id_dev.name_dev|default:"Студію не вказано" }}{% if g.release_date %} · {{ g.release_date.year }}{% endif %}</p>
+    <p class="tile-rating">{% if g.avg %}<b class="star">★ {{ g.avg|floatformat:1 }}</b> <span class="muted">({{ g.votes }})</span>{% else %}<span class="muted">Поки без оцінок</span>{% endif %}</p>
+    {% with genre_list=g.genres.all %}{% if genre_list %}<p class="tile-tags">{% for x in genre_list|slice:":3" %}<span>{{ x.name_genre }}</span>{% endfor %}</p>{% endif %}{% endwith %}
+  </div>
+  <div class="tile-actions">
+    {% wish_button g %}
+    {% if g.official_link %}
+      <a class="btn small" href="{{ g.official_link }}" target="_blank" rel="noopener noreferrer">Офіційний сайт ↗</a>
+    {% else %}
+      <span class="btn small ghost disabled" aria-disabled="true">Сайт не вказано</span>
+    {% endif %}
+  </div>
+</article>

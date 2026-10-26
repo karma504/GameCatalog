@@ -1,0 +1,24 @@
+{% extends 'catalog_game/base.html' %}
+{% block title %}Підбір гри · Хмарна полиця{% endblock %}
+{% block content %}
+<h1>Підбір гри</h1>
+<p class="muted">Позначте, що для вас важливо, а ми підберемо відповідне. Чим більше збігів за жанрами, тим вище гра в списку.</p>
+{% include 'catalog_game/_age_notice.html' %}
+<form class="panel pickform" method="get"><input type="hidden" name="go" value="1">
+  <fieldset><legend>Жанри</legend><div class="chips pick">{% for x in genres %}<label><input type="checkbox" name="genre" value="{{ x.pk }}" {% if x.pk in sel_genres %}checked{% endif %}><span>{{ x.name_genre }}</span></label>{% endfor %}</div></fieldset>
+  <fieldset><legend>Платформи</legend><div class="chips pick">{% for x in platforms %}<label><input type="checkbox" name="platform" value="{{ x.pk }}" {% if x.pk in sel_platforms %}checked{% endif %}><span>{{ x.name_platform }}</span></label>{% endfor %}</div></fieldset>
+  <div class="four">
+    <label{% if errors.max_price %} class="has-error"{% endif %}>Бюджет до<input name="max_price" value="{{ f.max_price }}" inputmode="decimal" autocomplete="off">{% if errors.max_price %}<span class="field-error" role="alert">{{ errors.max_price }}</span>{% endif %}</label>
+    <label{% if errors.max_size %} class="has-error"{% endif %}>Розмір до, ГБ<input name="max_size" value="{{ f.max_size }}" inputmode="decimal" autocomplete="off">{% if errors.max_size %}<span class="field-error" role="alert">{{ errors.max_size }}</span>{% endif %}</label>
+    <label{% if errors.age %} class="has-error"{% endif %}>Віковий рейтинг<select name="age"><option value="">Будь-який</option>{% for a in ages %}<option {% if f.age == a %}selected{% endif %}>{{ a }}</option>{% endfor %}</select>{% if errors.age %}<span class="field-error" role="alert">{{ errors.age }}</span>{% endif %}</label>
+    <label{% if errors.min_rating %} class="has-error"{% endif %}>Оцінка від<select name="min_rating"><option value="0">Будь-яка</option>{% for n in "2345" %}<option value="{{ n }}" {% if f.min_rating == n %}selected{% endif %}>{{ n }}★</option>{% endfor %}</select>{% if errors.min_rating %}<span class="field-error" role="alert">{{ errors.min_rating }}</span>{% endif %}</label>
+  </div>
+  <button class="btn">Підібрати</button>
+</form>
+{% if errors %}<div class="msg error" role="alert">Поки що нічого не підбираємо: виправте поля, позначені червоним, — і ми одразу покажемо ігри.</div>
+{% elif searched %}
+{% if search_error %}<div class="msg error" role="alert">Не вдалося виконати пошук. Спробуйте ще раз пізніше.</div>{% endif %}
+<h2>Що знайшлося</h2>
+<div class="grid">{% for g in results %}{% include 'catalog_game/_card.html' %}{% empty %}<p class="panel">За такими умовами нічого немає. Збільште бюджет або приберіть частину жанрів.</p>{% endfor %}</div>
+{% endif %}
+{% endblock %}
