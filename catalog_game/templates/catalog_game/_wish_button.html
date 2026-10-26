@@ -1,0 +1,11 @@
+{% if user.is_authenticated %}
+<form class="tile-wish" method="post" action="{% url 'catalog_game:wishlist_toggle' game.pk %}">
+  {% csrf_token %}
+  <input type="hidden" name="next" value="{{ next }}">
+  <button class="btn small{% if on %} ghost{% endif %}" type="submit" aria-pressed="{% if on %}true{% else %}false{% endif %}"
+          aria-label="{% if on %}Прибрати з обраного{% else %}Додати в обране{% endif %}: {{ game.title }}">{% if on %}Прибрати з обраного{% else %}Додати в обране{% endif %}</button>
+</form>
+{% else %}
+<a class="btn small" href="{% url 'catalog_game:login' %}?next={{ next|urlencode }}" title="Увійдіть, щоб додати в обране"
+   aria-label="Увійдіть, щоб додати в обране: {{ game.title }}">Додати в обране</a>
+{% endif %}
