@@ -1,0 +1,13 @@
+{% extends 'catalog_game/base.html' %}
+{% block title %}Реєстрація · Хмарна полиця{% endblock %}
+{% block content %}
+<form class="panel auth" method="post" novalidate>
+  {% csrf_token %}
+  <h1>Реєстрація</h1>
+  <p class="muted lead">Дата народження потрібна, щоб показувати лише ігри, доступні за віком.</p>
+  {% if form.non_field_errors %}<div class="msg error" role="alert">{{ form.non_field_errors.0 }}</div>{% endif %}
+  {% for field in form %}{% include 'catalog_game/_field.html' %}{% endfor %}
+  <button class="btn wide">Створити акаунт</button>
+  <p class="muted">Уже є акаунт? <a href="{% url 'catalog_game:login' %}">Увійти</a></p>
+</form>
+{% endblock %}

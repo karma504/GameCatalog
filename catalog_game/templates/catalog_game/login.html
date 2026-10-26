@@ -1,0 +1,14 @@
+{% extends 'catalog_game/base.html' %}
+{% block title %}Вхід · Хмарна полиця{% endblock %}
+{% block content %}
+<form class="panel auth" method="post" novalidate>
+  {% csrf_token %}
+  <h1>Вхід</h1>
+  <p class="muted lead">Увійдіть за email і паролем.</p>
+  {% if form.non_field_errors %}<div class="msg error" role="alert">{{ form.non_field_errors.0 }}</div>{% endif %}
+  {% for field in form %}{% include 'catalog_game/_field.html' %}{% endfor %}
+  <input type="hidden" name="next" value="{{ next }}">
+  <button class="btn wide">Увійти</button>
+  <p class="muted">Немає акаунта? <a href="{% url 'catalog_game:register' %}">Зареєструйтесь</a></p>
+</form>
+{% endblock %}

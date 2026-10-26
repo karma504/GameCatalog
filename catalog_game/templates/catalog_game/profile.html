@@ -1,0 +1,97 @@
+{% extends 'catalog_game/base.html' %}
+{% block title %}Мій профіль · Хмарна полиця{% endblock %}
+
+{% block content %}
+<section class="profile-page">
+
+  <header class="profile-header">
+    <div class="profile-avatar" aria-hidden="true">{{ user.firstname|default:user.email|slice:":1"|upper }}</div>
+    <div>
+      <h1>{{ user.get_full_name }}</h1>
+      <p>{{ user.email }}</p>
+    </div>
+  </header>
+
+  {# ---------- Особисті дані: перегляд або форма ---------- #}
+  <div class="panel profile-card">
+    <div class="card-head">
+      <div>
+        <h2>Особисті дані</h2>
+        <p class="panel-description">Інформація вашого профілю</p>
+      </div>
+      {% if editing != 'profile' %}
+        <a class="btn ghost small" href="{% url 'catalog_game:profile' %}?edit=profile#personal">Редагувати профіль</a>
+      {% endif %}
+    </div>
+
+    {% if editing == 'profile' %}
+      <form id="personal" method="post" action="{% url 'catalog_game:profile' %}" novalidate>
+        {% csrf_token %}
+        <input type="hidden" name="form_type" value="profile">
+        {{ profile_form.as_div }}
+        <div class="hrow">
+          <button class="btn">Зберегти зміни</button>
+          <a class="btn ghost" href="{% url 'catalog_game:profile' %}">Скасувати</a>
+        </div>
+      </form>
+    {% else %}
+      <dl class="info-list" id="personal">
+        <div><dt>Ім’я</dt><dd>{{ user.firstname|default:"Не вказано" }}</dd></div>
+        <div><dt>Прізвище</dt><dd>{{ user.last_name|default:"Не вказано" }}</dd></div>
+        <div><dt>Email</dt><dd>{{ user.email }}</dd></div>
+        <div><dt>Дата народження</dt><dd>{% if user.date_of_birth %}{{ user.date_of_birth|date:"j E Y" }} ({{ age }} р.){% else %}Не вказано{% endif %}</dd></div>
+        <div><dt>Доступні ігри</dt><dd>{% if not age_known and not age_restricted %}усі ігри{% elif max_rating %}рейтинг до {{ max_rating }}{% else %}немає{% endif %}{% if not age_known and age_restricted %} <span class="muted small">— вкажіть дату народження, щоб побачити більше</span>{% endif %}</dd></div>
+        <div><dt>У нас з</dt><dd>{{ user.date_registration|date:"j E Y" }}</dd></div>
+      </dl>
+    {% endif %}
+  </div>
+
+  {# ---------- Безпека ---------- #}
+  <div class="panel profile-card">
+    <div class="card-head">
+      <div>
+        <h2>Безпека</h2>
+        <p class="panel-description">Пароль захищає ваш акаунт</p>
+      </div>
+      {% if editing != 'password' %}
+        <a class="btn ghost small" href="{% url 'catalog_game:profile' %}?edit=password#security">Змінити пароль</a>
+      {% endif %}
+    </div>
+
+    {% if editing == 'password' %}
+      <form id="security" method="post" action="{% url 'catalog_game:profile' %}" novalidate>
+        {% csrf_token %}
+        <input type="hidden" name="form_type" value="password">
+        {{ password_form.as_div }}
+        <div class="hrow">
+          <button class="btn">Змінити пароль</button>
+          <a class="btn ghost" href="{% url 'catalog_game:profile' %}">Скасувати</a>
+        </div>
+      </form>
+    {% else %}
+      <p class="muted" id="security">Пароль приховано. Натисніть «Змінити пароль», щоб оновити його.</p>
+    {% endif %}
+  </div>
+
+  <div class="panel account-card">
+    <div>
+      <h2>Керування акаунтом</h2>
+      <p class="panel-description">Вихід із профілю або видалення облікового запису</p>
+    </div>
+    <div class="account-actions">
+      <form method="post" action="{% url 'catalog_game:logout' %}">
+        {% csrf_token %}
+        <button class="btn ghost">Вийти з акаунта</button>
+      </form>
+      <form method="post" action="{% url 'catalog_game:account_delete' %}"
+            data-confirm-title="Видалити акаунт?"
+            data-confirm-text="Усі ваші відгуки та обране буде видалено безповоротно."
+            data-confirm-yes="Так, видалити">
+        {% csrf_token %}
+        <button class="btn danger">Видалити акаунт</button>
+      </form>
+    </div>
+  </div>
+
+</section>
+{% endblock %}

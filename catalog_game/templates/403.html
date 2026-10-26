@@ -1,0 +1,9 @@
+{% extends 'catalog_game/base.html' %}
+{% block title %}Немає доступу · Хмарна полиця{% endblock %}
+{% block content %}
+<div class="panel auth">
+  <h1>Немає доступу</h1>
+  <p>У вас немає прав для цієї дії. Керування іграми доступне адміністраторам.</p>
+  <a class="btn" href="{% url 'catalog_game:home' %}">На головну</a>
+</div>
+{% endblock %}

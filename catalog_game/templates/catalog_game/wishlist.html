@@ -1,0 +1,31 @@
+{% extends 'catalog_game/base.html' %}
+{% block title %}Обране · Хмарна полиця{% endblock %}
+{% block content %}
+<h1>Обране <small class="muted">{{ items|length }}</small></h1>
+{% for it in items %}{% with g=it.id_game %}
+<article class="panel wish" style="--h:{{ g.hue }}">
+  <div class="cover mini">{% if g.image_link %}<img src="{{ g.image_link }}" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()">{% endif %}<span class="cover-letter">{{ g.title|slice:":1" }}</span></div>
+  <div><h3><a href="{% url 'catalog_game:game_detail' g.pk %}">{{ g.title }}</a></h3><p class="muted">{{ g.id_dev.name_dev|default:"" }} · {{ g.price_label }}</p>
+
+  </div>
+  <form method="post" action="{% url 'catalog_game:wishlist_toggle' g.pk %}" data-confirm-yes="Так, прибрати" data-confirm-title="Прибрати з обраного?" data-confirm-text="«{{ g.title }}» зникне зі списку обраного разом із нотаткою.">{% csrf_token %}<input type="hidden" name="next" value="{% url 'catalog_game:wishlist' %}"><button class="btn ghost small danger">Прибрати</button></form>
+  <div class="wish-note">
+    {% if it.note %}
+    <div class="note">
+      <span class="note-label">Нотатка</span>
+      <p>{{ it.note }}</p>
+      <div class="hrow">
+        <details class="note-edit"><summary class="btn ghost small">Змінити</summary>
+          <form class="hrow" method="post" action="{% url 'catalog_game:wishlist_note' g.pk %}">{% csrf_token %}<input name="note" value="{{ it.note }}" maxlength="255" required><button class="btn small">Зберегти</button></form>
+        </details>
+        <form method="post" action="{% url 'catalog_game:wishlist_note_delete' g.pk %}" data-confirm-title="Видалити нотатку?" data-confirm-text="Гра залишиться в обраному, зникне лише ваша нотатка.">{% csrf_token %}<button class="btn ghost small danger">Видалити нотатку</button></form>
+      </div>
+    </div>
+    {% else %}
+    <form class="hrow" method="post" action="{% url 'catalog_game:wishlist_note' g.pk %}">{% csrf_token %}<input name="note" placeholder="Нотатка: чому хочеться" maxlength="255" required><button class="btn small">Додати нотатку</button></form>
+    {% endif %}
+  </div>
+</article>{% endwith %}
+{% empty %}<p class="panel">Тут поки порожньо. Загляньте в <a href="{% url 'catalog_game:catalog' %}">каталог</a>.</p>{% endfor %}
+{% endblock %}
+
