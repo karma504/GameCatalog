@@ -1,0 +1,78 @@
+{% load catalog_tags %}
+<section id="reviews">
+  <div class="sec-head">
+    <h2>Відгуки {% if game.votes %}<small class="muted">{{ game.votes }}</small>{% endif %}</h2>
+  </div>
+
+  {% if user.is_authenticated %}
+    {% if mine and edit_review %}
+      {# редагування власного відгуку #}
+      <form class="panel review-form" method="post" action="{% url 'catalog_game:review_save' game.pk %}">
+        {% csrf_token %}
+        <input type="hidden" name="edit" value="1">
+        <h3>Редагувати відгук</h3>
+        {{ form.as_div }}
+        <div class="hrow">
+          <button class="btn">Зберегти зміни</button>
+          <a class="btn ghost" href="{% url 'catalog_game:game_detail' game.pk %}#reviews">Скасувати</a>
+        </div>
+      </form>
+    {% elif not mine %}
+      {# відгуку ще немає: показуємо форму. Якщо він уже є — форми немає зовсім #}
+      <form class="panel review-form" method="post" action="{% url 'catalog_game:review_save' game.pk %}">
+        {% csrf_token %}
+        <h3>Залишити відгук</h3>
+        {{ form.as_div }}
+        <div class="hrow"><button class="btn">Опублікувати відгук</button></div>
+      </form>
+    {% endif %}
+  {% else %}
+    <p class="panel">
+      Щоб залишити відгук, <a href="{% url 'catalog_game:login' %}?next={{ request.path|urlencode }}">увійдіть</a>
+      або <a href="{% url 'catalog_game:register' %}">зареєструйтесь</a>.
+    </p>
+  {% endif %}
+
+  {% if mine and not edit_review %}
+    <article class="review">
+      <span class="avatar sm">{% display_name mine.id_user as dn %}{{ dn|slice:":1"|upper }}</span>
+      <div class="review-main">
+        <div class="review-head">
+          <b>{% display_name mine.id_user %}</b><span class="tag">Ваш відгук</span>
+          {% rating_stars mine.rating %}
+          <span class="muted small">{{ mine.review_date|date:"j E Y" }}</span>
+          <a class="linkbtn" href="{% url 'catalog_game:game_detail' game.pk %}?edit_review=1#reviews">Редагувати</a>
+          <form class="inline" method="post" action="{% url 'catalog_game:review_remove' mine.pk %}"
+                data-confirm-title="Видалити відгук?" data-confirm-text="Ваш відгук і оцінку буде видалено.">
+            {% csrf_token %}<button class="linkbtn danger">Видалити</button>
+          </form>
+        </div>
+        {% if mine.comment %}<p>{{ mine.comment|linebreaksbr }}</p>{% endif %}
+      </div>
+    </article>
+  {% endif %}
+
+  {% for r in reviews %}
+    {% if not mine or r.pk != mine.pk %}
+      <article class="review">
+        <span class="avatar sm">{% display_name r.id_user as dn %}{{ dn|slice:":1"|upper }}</span>
+        <div class="review-main">
+          <div class="review-head">
+            <b>{% display_name r.id_user %}</b>
+            {% rating_stars r.rating %}
+            <span class="muted small">{{ r.review_date|date:"j E Y" }}</span>
+            {% if perms.catalog_game.delete_reviews %}
+            <form class="inline" method="post" action="{% url 'catalog_game:review_remove' r.pk %}"
+                  data-confirm-title="Видалити відгук?" data-confirm-text="Відгук користувача буде видалено (дія модератора).">
+              {% csrf_token %}<button class="linkbtn danger">Видалити (модератор)</button>
+            </form>
+            {% endif %}
+          </div>
+          {% if r.comment %}<p>{{ r.comment|linebreaksbr }}</p>{% endif %}
+        </div>
+      </article>
+    {% endif %}
+  {% empty %}
+    <p class="muted">Поки ніхто не писав. Будьте першим.</p>
+  {% endfor %}
+</section>

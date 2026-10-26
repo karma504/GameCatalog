@@ -1,0 +1,49 @@
+{% extends 'catalog_game/base.html' %}
+{% block title %}{{ game.title }} · Хмарна полиця{% endblock %}
+{% block content %}
+<p class="muted small"><a href="{% url 'catalog_game:catalog' %}">Каталог</a> / {{ game.title }}</p>
+
+<section class="detail game-hero" style="--h:{{ game.hue }}{% if game.image_link %};--img:url('{{ game.image_link }}'){% endif %}">
+  <div class="hero-info">
+    <h1>{{ game.title }}</h1>
+    <p>
+      {% if game.avg %}<b class="star">★ {{ game.avg|floatformat:1 }}</b> <span class="muted">({{ game.votes }})</span>
+      {% else %}<span class="muted">Поки без оцінок</span>{% endif %}
+    </p>
+    {% if genres %}<div class="chips">{% for x in genres %}<a href="{% url 'catalog_game:catalog' %}?genre={{ x.pk }}">{{ x.name_genre }}</a>{% endfor %}</div>{% endif %}
+    <p class="long">{{ game.description|default:"Опису поки немає."|linebreaksbr }}</p>
+    <dl>
+      <dt>Розробник</dt>
+      <dd>{% if game.id_dev %}<a href="{% url 'catalog_game:developer_detail' game.id_dev_id %}">{{ game.id_dev.name_dev }}</a>{% else %}Не вказано{% endif %}</dd>
+      <dt>Дата виходу</dt>
+      <dd>{% if game.release_date %}{{ game.release_date|date:"j E Y" }}{% else %}Не вказано{% endif %}</dd>
+      <dt>Віковий рейтинг</dt>
+      <dd>{% if game.age_rating %}<span class="tag">{{ game.age_rating }}</span>{% else %}Не вказано{% endif %}</dd>
+      <dt>Розмір</dt>
+      <dd>{% if game.file_size_gb is not None %}{{ game.file_size_gb|floatformat:"-2" }} ГБ{% else %}Не вказано{% endif %}</dd>
+      <dt>Платформи</dt>
+      <dd>{% for p in platforms %}{{ p.name_platform }}{% if not forloop.last %}, {% endif %}{% empty %}Не вказано{% endfor %}</dd>
+    </dl>
+  </div>
+
+  <aside class="panel buy">
+    <div class="price">{{ game.price_label }}</div>
+    {% if user.is_authenticated %}
+      <form method="post" action="{% url 'catalog_game:wishlist_toggle' game.pk %}">
+        {% csrf_token %}
+        <input type="hidden" name="next" value="{{ request.path }}">
+        <button class="btn wide{% if in_wishlist %} ghost{% endif %}">{% if in_wishlist %}Прибрати з обраного{% else %}Додати в обране{% endif %}</button>
+      </form>
+    {% else %}
+      <a class="btn wide" href="{% url 'catalog_game:login' %}?next={{ request.path|urlencode }}">Увійдіть, щоб додати в обране</a>
+    {% endif %}
+    {% if game.official_link %}
+      <a class="btn ghost wide" href="{{ game.official_link }}" target="_blank" rel="noopener noreferrer">Офіційний сайт ↗</a>
+    {% else %}
+      <span class="btn ghost wide disabled" aria-disabled="true">Офіційний сайт не вказано</span>
+    {% endif %}
+  </aside>
+</section>
+
+{% include 'catalog_game/_reviews.html' %}
+{% endblock %}

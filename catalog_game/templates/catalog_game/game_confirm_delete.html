@@ -1,0 +1,13 @@
+{% extends 'catalog_game/base.html' %}
+{% block title %}Видалення гри · Хмарна полиця{% endblock %}
+{% block content %}
+<form class="panel auth" method="post">
+  {% csrf_token %}
+  <h1>Видалити гру?</h1>
+  <p>Гру «{{ object.title }}» буде видалено разом із відгуками та записами в обраному. Дію не можна скасувати.</p>
+  <div class="hrow">
+    <button class="btn danger">Так, видалити</button>
+    <a class="btn ghost" href="{{ object.get_absolute_url }}">Скасувати</a>
+  </div>
+</form>
+{% endblock %}
