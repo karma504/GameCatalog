@@ -1,0 +1,80 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#2563d8">
+<title>{% block title %}Хмарна полиця{% endblock %}</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600&family=Unbounded:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+<link rel="stylesheet" href="{% static 'catalog_game/style.css' %}">
+</head>
+<body>
+<header class="bar">
+  <a class="brand" href="{% url 'catalog_game:home' %}"><i></i>Хмарна полиця</a>
+  <nav>
+    {% with cur=request.resolver_match.url_name %}
+    <a href="{% url 'catalog_game:catalog' %}"{% if cur == 'catalog' or cur == 'game_detail' %} class="on" aria-current="page"{% endif %}>Каталог</a>
+    <a href="{% url 'catalog_game:developer_list' %}"{% if cur == 'developer_list' or cur == 'developer_detail' %} class="on" aria-current="page"{% endif %}>Розробники</a>
+    <a href="{% url 'catalog_game:pick' %}"{% if cur == 'pick' %} class="on" aria-current="page"{% endif %}>Підбір гри</a>
+    {% if user.is_authenticated %}<a href="{% url 'catalog_game:wishlist' %}"{% if cur == 'wishlist' %} class="on" aria-current="page"{% endif %}>Обране</a>{% endif %}
+    {% endwith %}
+  </nav>
+  <form class="search" action="{% url 'catalog_game:catalog' %}">
+    <input name="q" placeholder="Знайти гру або студію" value="{{ request.GET.q }}">
+  </form>
+  <div class="who">
+    {% if user.is_authenticated %}
+      <a class="profile-link" href="{% url 'catalog_game:profile' %}"><span class="avatar">{{ user.firstname|default:user.email|slice:":1"|upper }}</span><span>{{ user.firstname|default:user.email }}</span></a>
+    {% else %}
+      <a class="btn ghost small" href="{% url 'catalog_game:login' %}">Увійти</a>
+      <a class="btn small" href="{% url 'catalog_game:register' %}">Реєстрація</a>
+    {% endif %}
+  </div>
+</header>
+<main>
+  {% for m in messages %}<div class="msg {{ m.tags }}">{{ m }}</div>{% endfor %}
+  {% block content %}{% endblock %}
+</main>
+<footer>Хмарна полиця · каталог ігор ·
+  <a href="{% url 'catalog_game:genre_list' %}">Жанри</a> ·
+  <a href="{% url 'catalog_game:platform_list' %}">Платформи</a></footer>
+{% if user.is_authenticated %}
+<dialog id="confirm-modal" class="dlg">
+  <form method="dialog" id="confirm-dialog-form">
+    <h2 id="confirm-title">Підтвердження дії</h2>
+    <p class="muted" id="confirm-text">Ви впевнені, що хочете продовжити?</p>
+    <div class="modal-actions"><button type="button" class="btn danger" id="confirm-yes">Підтвердити</button><button type="button" class="btn ghost" data-close>Скасувати</button></div>
+  </form>
+</dialog>
+{% endif %}
+<script>
+(function () {
+  let pendingForm = null;
+  const modal = document.getElementById('confirm-modal');
+  document.addEventListener('submit', function (e) {
+    const form = e.target.closest('form[data-confirm-title]');
+    if (!form || !modal || form.dataset.confirmed === 'true') return;
+    e.preventDefault(); pendingForm = form;
+    document.getElementById('confirm-title').textContent = form.dataset.confirmTitle || 'Підтвердження дії';
+    document.getElementById('confirm-text').textContent = form.dataset.confirmText || 'Ви впевнені, що хочете продовжити?';
+    const yes = document.getElementById('confirm-yes');
+    yes.textContent = form.dataset.confirmYes || 'Підтвердити';
+    modal.showModal();
+  });
+  document.getElementById('confirm-yes')?.addEventListener('click', function () {
+    if (!pendingForm) return;
+    const form = pendingForm; pendingForm = null; modal.close(); form.dataset.confirmed = 'true';
+    if (form.requestSubmit) form.requestSubmit(); else form.submit();
+  });
+  document.addEventListener('click', function (e) {
+    if (e.target.closest('[data-close]')) { e.target.closest('dialog').close(); pendingForm = null; }
+    if (e.target.tagName === 'DIALOG' && e.target.open) { e.target.close(); pendingForm = null; }
+  });
+})();
+</script>
+</body>
+</html>

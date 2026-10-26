@@ -1,0 +1,28 @@
+
+{% if age_is_guest %}
+<div class="msg info" role="note">
+    {% if user.is_authenticated %}
+        <p>
+            Щоб переглядати ігри відповідно до вашого віку,
+            вкажіть дату народження у профілі.
+        </p>
+        <a href="{% url 'catalog_game:profile' %}?edit=profile">
+            Вказати дату народження
+        </a>
+    {% else %}
+        <p>
+            Увійдіть в акаунт або зареєструйтесь, щоб переглядати ігри
+            відповідно до вашого віку.
+        </p>
+
+        <a href="{% url 'catalog_game:login' %}">
+            Увійти в акаунт
+        </a>
+
+        <a href="{% url 'catalog_game:register' %}">
+            Зареєструватися
+        </a>
+    {% endif %}
+</div>
+{% endif %}
+

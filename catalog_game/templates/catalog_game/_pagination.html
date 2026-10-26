@@ -1,0 +1,9 @@
+{% if page_obj.paginator.num_pages > 1 %}
+<nav aria-label="Сторінки" class="mt-4">
+  <ul class="pagination justify-content-center">
+    {% if page_obj.has_previous %}<li class="page-item"><a class="page-link" href="?{% if keep %}{{ keep }}&amp;{% endif %}page={{ page_obj.previous_page_number }}">Назад</a></li>{% endif %}
+    <li class="page-item disabled"><span class="page-link">{{ page_obj.number }} / {{ page_obj.paginator.num_pages }}</span></li>
+    {% if page_obj.has_next %}<li class="page-item"><a class="page-link" href="?{% if keep %}{{ keep }}&amp;{% endif %}page={{ page_obj.next_page_number }}">Далі</a></li>{% endif %}
+  </ul>
+</nav>
+{% endif %}
