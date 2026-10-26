@@ -1,0 +1,8 @@
+{% extends 'catalog_game/base.html' %}
+{% block title %}{{ heading }} · Хмарна полиця{% endblock %}
+{% block content %}
+<h1>{{ heading }}</h1>
+<div class="chips">
+{% for o in object_list %}<a href="{{ o.get_absolute_url }}">{{ o }} <span class="muted">({{ o.n }})</span></a>{% empty %}<p class="muted">Поки порожньо.</p>{% endfor %}
+</div>
+{% endblock %}

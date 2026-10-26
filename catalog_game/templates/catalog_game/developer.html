@@ -1,0 +1,9 @@
+{% extends 'catalog_game/base.html' %}
+{% block title %}{{ dev.name_dev }} · Хмарна полиця{% endblock %}
+{% block content %}
+<h1>{{ dev.name_dev }}</h1>
+<p class="muted">{% if dev.country_dev %}{{ dev.country_dev }}{% endif %}{% if dev.city_dev %}, {{ dev.city_dev }}{% endif %}{% if dev.founded_year %} · заснована у {{ dev.founded_year }}{% endif %}</p>
+<p>{% if dev.website_link %}<a href="{{ dev.website_link }}" target="_blank" rel="noopener">{{ dev.website }}</a>{% endif %} {% if dev.email %}<a href="mailto:{{ dev.email }}">{{ dev.email }}</a>{% endif %}</p>
+<h2>Ігри студії</h2>
+<div class="grid">{% for g in games %}{% include 'catalog_game/_card.html' %}{% empty %}<p class="muted">Ігор поки немає.</p>{% endfor %}</div>
+{% endblock %}

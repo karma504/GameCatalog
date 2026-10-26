@@ -1,0 +1,11 @@
+{% extends 'catalog_game/base.html' %}
+{% load catalog_tags %}
+{% block title %}Відгук · Хмарна полиця{% endblock %}
+{% block content %}
+<p class="muted small"><a href="{{ review.id_game.get_absolute_url }}">{{ review.id_game.title }}</a> / відгук</p>
+<article class="panel">
+  <h1>{{ review.id_game.title }}</h1>
+  <p><b>{% display_name review.id_user %}</b> {% rating_stars review.rating %} <span class="muted small">{{ review.review_date|date:"j E Y" }}</span></p>
+  <p>{{ review.comment|default:"Без коментаря."|linebreaksbr }}</p>
+</article>
+{% endblock %}

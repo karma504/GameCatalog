@@ -1,0 +1,15 @@
+{% extends 'catalog_game/base.html' %}
+{% block title %}Розробники · Хмарна полиця{% endblock %}
+{% block content %}
+<h1>Розробники <small class="muted">{{ paginator.count }}</small></h1>
+<div class="grid">
+{% for d in object_list %}
+  <a class="panel" href="{{ d.get_absolute_url }}">
+    <h3>{{ d.name_dev }}</h3>
+    <p class="muted">{{ d.country_dev|default:"Країну не вказано" }}{% if d.founded_year %} · з {{ d.founded_year }}{% endif %}</p>
+    <p>Ігор у каталозі: <b>{{ d.n }}</b></p>
+  </a>
+{% empty %}<p class="panel">Розробників поки немає.</p>{% endfor %}
+</div>
+{% include 'catalog_game/_pagination.html' %}
+{% endblock %}

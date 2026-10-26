@@ -1,0 +1,7 @@
+{% extends 'catalog_game/base.html' %}
+{% block title %}{{ obj_name }} · Хмарна полиця{% endblock %}
+{% block content %}
+<p class="muted small">{{ label }}</p>
+<h1>{{ obj_name }}</h1>
+<div class="grid">{% for g in games %}{% include 'catalog_game/_card.html' %}{% empty %}<p class="muted">Ігор поки немає.</p>{% endfor %}</div>
+{% endblock %}
