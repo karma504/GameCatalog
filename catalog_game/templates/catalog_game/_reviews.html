@@ -61,12 +61,6 @@
             <b>{% display_name r.id_user %}</b>
             {% rating_stars r.rating %}
             <span class="muted small">{{ r.review_date|date:"j E Y" }}</span>
-            {% if perms.catalog_game.delete_reviews %}
-            <form class="inline" method="post" action="{% url 'catalog_game:review_remove' r.pk %}"
-                  data-confirm-title="Видалити відгук?" data-confirm-text="Відгук користувача буде видалено (дія модератора).">
-              {% csrf_token %}<button class="linkbtn danger">Видалити (модератор)</button>
-            </form>
-            {% endif %}
           </div>
           {% if r.comment %}<p>{{ r.comment|linebreaksbr }}</p>{% endif %}
         </div>
